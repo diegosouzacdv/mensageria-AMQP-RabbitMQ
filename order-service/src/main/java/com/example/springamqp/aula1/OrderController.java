@@ -21,10 +21,10 @@ public class OrderController {
 	public Order create(@RequestBody Order order) {
 		orders.save(order);
 
-		String routingKey = "order.v1.order-created";
 		OrderCreatedEvent event = new OrderCreatedEvent(order.getId(), order.getValue());
 
-		rabbitTemplate.convertAndSend(routingKey, event);
+		rabbitTemplate.convertAndSend("order.v1.order-created.generate-cashback", event);
+		rabbitTemplate.convertAndSend("order.v1.order-created.send-notification", event);
 		return order;
 	}
 
