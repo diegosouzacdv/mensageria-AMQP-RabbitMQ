@@ -1,5 +1,6 @@
 package com.example.springamqp.aula1;
 
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -14,13 +15,8 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     @Bean
-    public Queue queueCashback() {
-        return new Queue("order.v1.order-created.generate-cashback");
-    }
-
-    @Bean
-    public Queue queueNotification() {
-        return new Queue("order.v1.order-created.send-notification");
+    public FanoutExchange fanoutExchange() {
+        return new FanoutExchange("orders.v1.order-created");
     }
 
     @Bean
@@ -29,7 +25,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public ApplicationListener<ApplicationReadyEvent> applicationReadyEventApplicationListener(RabbitAdmin rabbitAdmin) {
+    public ApplicationListener<ApplicationReadyEvent> applicationReadyEventApplicationListener(
+            RabbitAdmin rabbitAdmin) {
         return event-> rabbitAdmin.initialize();
     }
 
