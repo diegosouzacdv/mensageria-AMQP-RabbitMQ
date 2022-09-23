@@ -1,6 +1,5 @@
 package com.example.springamqp.aula1;
 
-import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -8,8 +7,9 @@ import org.springframework.stereotype.Component;
 public class OrderCreatedListener {
 
     @RabbitListener(queues = "order.v1.order-created")
-    public void orderCreated(Long id) {
+    public void orderCreated(OrderCreatedEvent event) {
 
-            System.out.println("Id Recebido " + id);
+            System.out.println("Id Recebido " + event.getId());
+            System.out.println("Valor Recebido " + event.getValue());
     }
 }
