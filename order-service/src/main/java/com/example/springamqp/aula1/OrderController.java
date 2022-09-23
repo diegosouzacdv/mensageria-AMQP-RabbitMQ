@@ -22,8 +22,9 @@ public class OrderController {
 		orders.save(order);
 
 		String routingKey = "order.v1.order-created";
-		Message message = new Message(order.getId().toString().getBytes());
-		rabbitTemplate.send(routingKey, message);
+		//Message message = new Message(order.getId().toString().getBytes());
+		rabbitTemplate.convertAndSend(routingKey, order.getId());
+		//rabbitTemplate.send(routingKey, message);
 		return order;
 	}
 
