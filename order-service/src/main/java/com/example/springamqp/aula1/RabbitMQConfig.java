@@ -20,6 +20,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public FanoutExchange fanoutExchangeDLX() {
+        return new FanoutExchange("orders.v1.order-created.dlx");
+    }
+
+    @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
             return new RabbitAdmin(connectionFactory);
     }
