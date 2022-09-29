@@ -1,10 +1,7 @@
 package com.algaworks.example.coupon.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,11 +17,46 @@ public class RabbitMQConfig {
     public static final String ORDER_EXCHANGE_NAME = "order.v1.order-paid";
     public static final String COUPON_QUEUE_NAME = "coupon.v1.order-paid.generate-coupon";
 
+    public static final String ORDER_EXCHANGE_NAME_EVENT = "order.v1.events";
+
+    private static final String ORDER_PAID_ROUTING_KEY_EVENT = "order-paid";
+
+    private static final String ORDER_CANCEL_ROUTING_KEY = "order-cancel";
+
+    public static final String COUPON_GENERATE_QUEUE_NAME = "coupon.v1.on-order-paid.generate-coupon";
+
+    public static final String COUPON_CANCEL_QUEUE_NAME = "coupon.v1.on-order-cancel.cancel-coupon";
+
     Queue couponQueueName = new Queue(COUPON_QUEUE_NAME);
+    Queue couponGenerateQueueName = new Queue(COUPON_GENERATE_QUEUE_NAME);
+    Queue couponQueueCancel = new Queue(COUPON_CANCEL_QUEUE_NAME);
+
+    @Bean
+    public Queue queueCancelCoupon() {
+        return couponQueueCancel;
+    }
 
     @Bean
     public Queue queue() {
         return couponQueueName;
+    }
+
+    @Bean
+    public Queue queueGenerate() {
+        return couponGenerateQueueName;
+    }
+
+
+    @Bean
+    public Binding bindingCancelCoupon() {
+        DirectExchange exchange = new DirectExchange(ORDER_EXCHANGE_NAME_EVENT);
+        return BindingBuilder.bind(couponQueueCancel).to(exchange).with(ORDER_CANCEL_ROUTING_KEY );
+    }
+
+    @Bean
+    public Binding bindingGenerateCoupon() {
+        DirectExchange exchange = new DirectExchange(ORDER_EXCHANGE_NAME_EVENT);
+        return BindingBuilder.bind(couponGenerateQueueName).to(exchange).with(ORDER_PAID_ROUTING_KEY_EVENT );
     }
 
     @Bean

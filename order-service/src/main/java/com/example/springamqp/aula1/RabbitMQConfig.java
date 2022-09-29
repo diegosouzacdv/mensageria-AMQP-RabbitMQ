@@ -1,7 +1,7 @@
 package com.example.springamqp.aula1;
 
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,11 +15,18 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
 
-    public static final String ORDER_EXCHANGE_NAME = "order.v1.order-paid";
+    public static final String ORDER_EXCHANGE_NAME_PAID = "order.v1.order-paid";
+    public static final String ORDER_EXCHANGE_NAME_EVENT = "order.v1.events";
+
+
+    @Bean
+    public DirectExchange exchangeDirectExchange() {
+        return new DirectExchange(ORDER_EXCHANGE_NAME_EVENT);
+    }
 
     @Bean
     public FanoutExchange exchangeOrderPaid() {
-        return new FanoutExchange(ORDER_EXCHANGE_NAME);
+        return new FanoutExchange(ORDER_EXCHANGE_NAME_PAID);
     }
 
     @Bean

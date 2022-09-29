@@ -1,6 +1,7 @@
 package com.example.springamqp.aula1.controller;
 
 import com.example.springamqp.aula1.domain.Order;
+import com.example.springamqp.aula1.event.OrderCancelEvent;
 import com.example.springamqp.aula1.event.OrderPaidEvent;
 import com.example.springamqp.aula1.model.OrderInputModel;
 import com.example.springamqp.aula1.model.OrderModel;
@@ -17,7 +18,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
-import static com.example.springamqp.aula1.RabbitMQConfig.ORDER_EXCHANGE_NAME;
+import static com.example.springamqp.aula1.RabbitMQConfig.ORDER_EXCHANGE_NAME_EVENT;
+import static com.example.springamqp.aula1.RabbitMQConfig.ORDER_EXCHANGE_NAME_PAID;
 
 @RestController
 @RequestMapping(value = "/v1/orders")
@@ -30,6 +32,10 @@ public class OrderController {
 	private RabbitTemplate rabbitTemplate;
 
 	private static final String ORDER_PAID_ROUTING_KEY = "";
+
+	private static final String ORDER_PAID_ROUTING_KEY_EVENT = "order-paid";
+
+	private static final String ORDER_CANCEL_ROUTING_KEY = "order-cancel";
 
 	@PostMapping
 	public Order create(@RequestBody Order order) {
@@ -81,18 +87,25 @@ public class OrderController {
 	public Order pay(@PathVariable Long id) {
 		Order order = orders.findById(id).orElseThrow();
 		order.markAsPaid();
+
 		OrderPaidEvent event = new OrderPaidEvent(OrderModel.of(order));
 
-		rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME, ORDER_PAID_ROUTING_KEY, event);
+		rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME_PAID, ORDER_PAID_ROUTING_KEY, event);
+
+		rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME_EVENT, ORDER_PAID_ROUTING_KEY_EVENT, event);
 
 		return orders.save(order);
 	}
 
-	@PostMapping("{id}/cancel")
+	@PostMapping("/{id}/cancel")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void cancel(@PathVariable Long id) {
 		Order order = orders.findById(id).orElseThrow();
 		order.cancel();
+
+		OrderCancelEvent event = new OrderCancelEvent(OrderModel.of(order));
+		rabbitTemplate.convertAndSend(ORDER_EXCHANGE_NAME_EVENT, ORDER_CANCEL_ROUTING_KEY, event);
+
 		orders.save(order);
 	}
 	
