@@ -1,4 +1,4 @@
-package com.example.springamqp.aula1;
+package com.example.springamqp.aula1.event;
 
 import java.math.BigDecimal;
 

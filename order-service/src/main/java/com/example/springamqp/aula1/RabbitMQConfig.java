@@ -14,6 +14,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
+
+    public static final String ORDER_EXCHANGE_NAME = "order.v1.order-paid";
+
+    @Bean
+    public FanoutExchange exchangeOrderPaid() {
+        return new FanoutExchange(ORDER_EXCHANGE_NAME);
+    }
+
     @Bean
     public FanoutExchange fanoutExchange() {
         return new FanoutExchange("orders.v1.order-created");

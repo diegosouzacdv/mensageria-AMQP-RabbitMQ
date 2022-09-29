@@ -1,4 +1,4 @@
-package com.example.springamqp.aula1;
+package com.example.springamqp.aula1.domain;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -11,6 +11,14 @@ public class Order {
 	private Long id;
 	private BigDecimal value = BigDecimal.ZERO;
 	private Boolean paid = Boolean.FALSE;
+
+	public Order() {
+	}
+
+	public Order(BigDecimal value, Boolean paid) {
+		this.value = value;
+		this.paid = paid;
+	}
 
 	public Long getId() {
 		return id;
@@ -38,5 +46,9 @@ public class Order {
 
 	public void markAsPaid() {
 		this.paid = true;
+	}
+
+	public void cancel() {
+		this.paid = false;
 	}
 }

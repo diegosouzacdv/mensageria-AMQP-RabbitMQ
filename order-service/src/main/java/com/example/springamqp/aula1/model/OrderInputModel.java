@@ -1,0 +1,37 @@
+package com.example.springamqp.aula1.model;
+
+import com.example.springamqp.aula1.domain.Order;
+
+import java.math.BigDecimal;
+
+public class OrderInputModel {
+	private BigDecimal value = BigDecimal.ZERO;
+	private Boolean paid = Boolean.FALSE;
+
+	public OrderInputModel() {
+	}
+
+	public Order toOrder() {
+		return new Order(value,paid);
+	}
+
+	public BigDecimal getValue() {
+		return value;
+	}
+
+	public void setValue(BigDecimal value) {
+		this.value = value;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public void markAsPaid() {
+		this.paid = true;
+	}
+}
